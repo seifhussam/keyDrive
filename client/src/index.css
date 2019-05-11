@@ -1,0 +1,8 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+.filepond--panel-root {
+  background-color: #fff;
+}
