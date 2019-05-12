@@ -14,7 +14,7 @@ router.post('/', auth.required, (req, res, next) => {
     jwt.verify(req.cookies.token, secret, (err, decodded) => {
       if (err) {
         console.log(err);
-        return res.status(500).send(err);
+        return res.status(401).send(err);
       } else {
         let userPath = uploadPath + decodded.email + decodded.id;
         if (!fs.existsSync(userPath)) {
@@ -24,7 +24,7 @@ router.post('/', auth.required, (req, res, next) => {
           if (err) {
             console.log(err);
 
-            return res.status(500).send(err);
+            return res.status(400).send(err);
           }
 
           res.json({
@@ -34,7 +34,7 @@ router.post('/', auth.required, (req, res, next) => {
       }
     });
   } else {
-    return res.status(500).json({ err: 'token not found' });
+    return res.status(401).json({ err: 'token not found' });
   }
 });
 
@@ -43,27 +43,22 @@ router.get('/', auth.required, (req, res) => {
     jwt.verify(req.cookies.token, secret, (err, decodded) => {
       if (err) {
         console.log(err);
-        return res.status(500).send(err);
+        return res.status(401).send(err);
       } else {
         const directoryPath = uploadPath + decodded.email + decodded.id;
         console.log(directoryPath);
         fs.readdir(directoryPath, function(err, files) {
           //handling error
           if (err) {
-            return res.status(500).json({ err: 'something bad happen' });
+            return res.status(401).json({ err: 'something bad happen' });
           }
-          //listing all files using forEach
-          files.forEach(function(file) {
-            // Do whatever you want to do with the file
-            console.log(file);
-          });
 
-          res.status(200).json(files);
+          return res.status(200).json(files);
         });
       }
     });
   } else {
-    return res.status(500).json({ err: 'token not found' });
+    return res.status(401).json({ err: 'token not found' });
   }
 });
 
@@ -76,6 +71,53 @@ router.delete('/', auth.required, (req, res) => {
     console.log('File deleted!');
     res.sendStatus(200);
   });
+});
+
+router.delete('/delete', auth.required, (req, res) => {
+  if (req.cookies.token) {
+    jwt.verify(req.cookies.token, secret, (err, decodded) => {
+      if (err) {
+        console.log(err);
+        return res.status(401).send(err);
+      } else {
+        const directoryPath =
+          uploadPath + decodded.email + decodded.id + '/' + req.query.file;
+
+        fs.unlink(directoryPath, function(err) {
+          if (err) res.status(400).json({ err });
+          // if no error, file has been deleted successfully
+          console.log('File deleted!');
+          res.sendStatus(200);
+        });
+      }
+    });
+  } else {
+    return res.status(401).json({ err: 'token not found' });
+  }
+});
+
+router.get('/download', auth.required, (req, res) => {
+  if (req.cookies.token) {
+    jwt.verify(req.cookies.token, secret, (err, decodded) => {
+      if (err) {
+        console.log(err);
+        return res.status(401).send(err);
+      } else {
+        const directoryPath =
+          uploadPath + decodded.email + decodded.id + '/' + req.query.file;
+        try {
+          if (fs.existsSync(directoryPath)) {
+            //file exists
+            return res.download(directoryPath);
+          }
+        } catch (err) {
+          return res.status(400).json({ err: err });
+        }
+      }
+    });
+  } else {
+    return res.status(401).json({ err: 'token not found' });
+  }
 });
 
 module.exports = router;
