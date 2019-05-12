@@ -21,7 +21,14 @@ export class Home extends Component {
   componentDidMount() {
     axios
       .get('/users/current')
-      .then(data => {})
+      .then(data => {
+        axios
+          .get('/upload')
+          .then(data => {
+            console.log(data.data);
+          })
+          .catch(err => {});
+      })
       .catch(err => {
         this.props.history.push('/login');
       });
