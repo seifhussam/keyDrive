@@ -5,23 +5,35 @@ import {
   NavbarToggler,
   Collapse,
   Nav,
+  Row,
   Jumbotron
 } from 'reactstrap';
 
 import axios from '../axios';
 import FileUpload from '../Components/FileUpload';
+import MyFiles from '../Components/MyFiles';
 
 export class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isOpen: false
+      isOpen: false,
+      files: []
     };
   }
   componentDidMount() {
     axios
       .get('/users/current')
-      .then(data => {})
+      .then(data => {
+        axios
+          .get('/upload')
+          .then(data => {
+            this.setState({
+              files: data.data
+            });
+          })
+          .catch(err => {});
+      })
       .catch(err => {
         this.props.history.push('/login');
       });
@@ -35,6 +47,15 @@ export class Home extends Component {
       isOpen: !this.state.isOpen
     });
   };
+
+  onReload = () => {
+    axios.get('/upload').then(data => {
+      this.setState({
+        files: data.data
+      });
+    });
+  };
+
   render() {
     return (
       <div>
@@ -54,7 +75,15 @@ export class Home extends Component {
         </Navbar>
         <Jumbotron>
           <h2> File upload </h2>
-          <FileUpload />
+          <FileUpload onReload={this.onReload} />
+          <h2>Uploaded files</h2>
+          {this.state.files.length > 0 ? (
+            <Row>
+              <MyFiles onReload={this.onReload} files={this.state.files} />
+            </Row>
+          ) : (
+            <p>...</p>
+          )}
         </Jumbotron>
       </div>
     );
