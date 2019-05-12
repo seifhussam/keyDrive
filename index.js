@@ -23,8 +23,10 @@ app.use(require('morgan')('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(bodyParser.text());
+
 app.use(cookieParser());
 app.use(fileUpload());
+app.use(express.limit('5M'));
 app.use(
   session({
     secret: secret,
