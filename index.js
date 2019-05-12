@@ -26,7 +26,7 @@ app.use(bodyParser.text());
 
 app.use(cookieParser());
 app.use(fileUpload());
-app.use(express.limit('5M'));
+app.use(bodyParser.json({ limit: '5mb' }));
 app.use(
   session({
     secret: secret,
