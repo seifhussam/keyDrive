@@ -43,11 +43,11 @@ export default function MyFiles(props) {
           <hr />
 
           <Button color='primary' onClick={() => downloadFile(file)} block>
-            download
+            Download
           </Button>
 
           <Button color='danger' onClick={() => deleteFile(file)} block>
-            delete
+            Delete
           </Button>
         </Card>
       </Col>
