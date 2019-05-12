@@ -20,16 +20,6 @@ router.post('/', auth.required, (req, res, next) => {
     });
   });
 });
-// router.delete('/revert', auth.required, (req, res) => {
-//   const fileName = JSON.parse(req.query.file).file;
-//   console.log(fileName);
-//   fs.unlink(fileName, function(err) {
-//     if (err) res.status(400).json({ err });
-//     // if no error, file has been deleted successfully
-//     console.log('File deleted!');
-//     res.sendStatus(200);
-//   });
-// });
 
 router.delete('/', auth.required, (req, res) => {
   const fileName = JSON.parse(req.body).file;
