@@ -5,8 +5,6 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
 import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 
-import axios from '../axios';
-
 // Register the plugin
 
 export class FileUpload extends Component {
@@ -16,17 +14,8 @@ export class FileUpload extends Component {
     registerPlugin(FilePondPluginFileValidateSize);
   }
 
-  onFileRemove = item => {
-    console.log(item);
-    axios
-      .delete('upload/revert/', { params: { file: item.serverId } })
-      .then(data => {
-        console.log(data);
-        return true;
-      })
-      .catch(err => {
-        return false;
-      });
+  onFileRemove = () => {
+    this.props.onReload();
   };
   render() {
     return (
@@ -35,6 +24,8 @@ export class FileUpload extends Component {
         maxFileSize='5MB'
         name={'file'}
         server='/api/upload'
+        onremovefile={this.onFileRemove}
+        onprocessfiles={this.onFileRemove}
       />
     );
   }

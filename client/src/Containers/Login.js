@@ -179,7 +179,9 @@ export class Login extends Component {
     return (
       <Jumbotron>
         <Row>
-          <Col sm='12' md={{ size: 8, offset: 4 }} />
+          <Col sm='12' md={{ size: 8, offset: 4 }}>
+            <h1>KeyDrive</h1>
+          </Col>
         </Row>
         <br />
         <Row>
