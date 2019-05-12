@@ -45,6 +45,8 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 
 require('./models/Users');
+require('./models/Files');
+
 require('./config/passport');
 app.use(require('./routes'));
 

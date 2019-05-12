@@ -32,22 +32,32 @@ export default function MyFiles(props) {
   };
   return props.files.map(file => {
     return (
-      <Col key={file} md='3'>
+      <Col key={file.filePath} md='3'>
         <br />
         <Card body>
-          <CardTitle>{file}</CardTitle>
+          <CardTitle>{file.fileName}</CardTitle>
           <FileIcon
             color='whitesmoke'
-            {...defaultStyles[getExtention(file) ? getExtention(file) : 'txt']}
+            {...defaultStyles[
+              getExtention(file.fileName) ? getExtention(file.fileName) : 'txt'
+            ]}
           />
           <hr />
 
-          <Button color='primary' onClick={() => downloadFile(file)} block>
-            download
+          <Button
+            color='primary'
+            onClick={() => downloadFile(file.filePath)}
+            block
+          >
+            Download
           </Button>
 
-          <Button color='danger' onClick={() => deleteFile(file)} block>
-            delete
+          <Button
+            color='danger'
+            onClick={() => deleteFile(file.filePath)}
+            block
+          >
+            Delete
           </Button>
         </Card>
       </Col>
