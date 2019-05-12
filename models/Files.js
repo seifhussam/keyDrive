@@ -20,6 +20,9 @@ const FilesSchema = new Schema({
   userID: {
     type: String,
     required: true
+  },
+  IV: {
+    type: String
   }
 });
 
