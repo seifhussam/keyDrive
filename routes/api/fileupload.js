@@ -9,8 +9,6 @@ const secret = require('../../config/passportConfig.json').secret;
 const uploadPath = __dirname + '/../../uploads/';
 
 const algorithm = 'aes-256-cbc';
-const key = crypto.randomBytes(32);
-const iv = crypto.randomBytes(16);
 
 router.post('/', auth.required, (req, res, next) => {
   let uploadFile = req.files.file;
@@ -36,15 +34,21 @@ router.post('/', auth.required, (req, res, next) => {
 
             return res.status(400).send(err);
           }
-          File.filePath = userPath + '/' + dateTime + fileName;
-          File.fileKey = dateTime + fileName;
-          File.userID = decodded.id;
 
-          var pathToFile = `${uploadPath + '/Temp/' + dateTime + fileName}`;
-          var pathToFileEnc = `${userPath + '/' + dateTime + '_enc_omar____seif_' + fileName}`;
+          const key = crypto.randomBytes(32);
+          const iv = crypto.randomBytes(16);
+
+          // console.log(key.toString('hex'));
+          File.fileKey = key.toString('hex');
+          File.userID = decodded.id;
+          File.IV = iv.toString('hex');
+
+          const pathToFile = `${uploadPath + '/Temp/' + dateTime + fileName}`;
+          const pathToFileEnc = `${userPath + '/' + dateTime + '_enc_' + fileName}`;
+          File.filePath = pathToFileEnc;
 
           fs.readFile(pathToFile, 'binary', function(err, contents) {
-            let hw = encrypt(Buffer.from(contents));
+            let hw = encrypt(Buffer.from(contents),key,iv);
             fs.writeFile(pathToFileEnc, hw.encryptedData, 'binary', err => {
 
               fs.unlink(pathToFile, function(err){});
@@ -66,15 +70,7 @@ router.post('/', auth.required, (req, res, next) => {
          });
 
 
-         // var pathToFileDec = `${userPath + '/' + dateTime + '_dec_' + fileName}`;
-         // fs.readFile(pathToFileEnc, 'binary', function(err, contents) {
-         //   hw.encryptedData = contents;
-         //   let decrypted = decrypt(hw);
-         //   fs.writeFile(pathToFileDec, decrypted, 'binary', err => {
-         //     if (err) console.log(err);
-         //     console.log('success');
-         //   });
-         // });
+
 
         });
       }
@@ -160,16 +156,37 @@ router.get('/download', auth.required, (req, res) => {
         console.log(err);
         return res.status(401).send(err);
       } else {
-        const directoryPath =
-          uploadPath + decodded.email + decodded.id + '/' + req.query.file;
-        try {
+
+        const directoryPath = req.query.file;
+        console.log(directoryPath);
+
+        // Files.findByFilePath(req.query.file,(err,data)=>{
+        //    console.log(data)
+        //   })
+      //  try {
           if (fs.existsSync(directoryPath)) {
-            //file exists
-            return res.download(directoryPath);
+            Files.findByFilePath(directoryPath,(err,data)=>{
+               console.log("upload path ",uploadPath);
+               console.log("File name", data.fileName);
+              const pathToFileDec = `${uploadPath + 'DownTemp/' + data.fileName}`;
+              console.log("decPath ", pathToFileDec)
+              fs.readFile(directoryPath, 'binary', function(err, contents) {
+                // hw.encryptedData = contents;
+                 decrypt(contents,data.fileKey,data.IV, decrypted => {
+                   fs.writeFile(pathToFileDec, decrypted, 'binary', err => {
+                     if (err) return console.log(err);
+                     console.log('success decrypted');
+                     console.log(pathToFileDec);
+                     return res.download(pathToFileDec);
+                   });
+                });
+
+              });
+            })
           }
-        } catch (err) {
-          return res.status(400).json({ err: err });
-        }
+        //} catch (err) {
+          //return res.status(400).json({ err: err });
+        //}
       }
     });
   } else {
@@ -177,20 +194,21 @@ router.get('/download', auth.required, (req, res) => {
   }
 });
 
-function encrypt(text) {
+function encrypt(text,key,iv) {
   let cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
   return { iv: iv.toString('hex'), encryptedData: encrypted.toString('hex') };
 }
 
-function decrypt(text) {
-  let iv = Buffer.from(text.iv, 'hex');
-  let encryptedText = Buffer.from(text.encryptedData, 'hex');
-  let decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv);
+function decrypt(text,key,iv, cb) {
+  // let iv = Buffer.from(text.iv, 'hex');
+  console.log(iv);
+  let encryptedText = Buffer.from(text, 'hex');
+  let decipher = crypto.createDecipheriv(algorithm, Buffer.from(Buffer.from(key,"hex")), Buffer.from(iv,"hex"));
   let decrypted = decipher.update(encryptedText);
   decrypted = Buffer.concat([decrypted, decipher.final()]);
-  return decrypted.toString();
+  return cb(decrypted.toString());
 }
 
 module.exports = router;
