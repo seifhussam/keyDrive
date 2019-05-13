@@ -4,11 +4,26 @@ const instance = axios.create({
   withCredentials: true
 });
 
+let symmetricKey = 'Symetric';
+
+let publicKey = 'Asymetric';
+
 // Add a request interceptor
 axios.interceptors.request.use(
   function(config) {
     // Do something before request is sent
-    console.log(config);
+
+    /*
+     * config.data and config.params
+     */
+
+    if (config.params) {
+      //encrypt
+    }
+
+    if (config.data) {
+      //encrypt
+    }
 
     return config;
   },
