@@ -16,14 +16,18 @@ export default function MyFiles(props) {
 
   const downloadFile = file => {
     axios
-      .get('/upload/download/', { params: { file: file } })
-      .then(data => {
-        const url = window.URL.createObjectURL(new Blob([data.data]));
+      .get('/upload/download/', {
+        responseType: 'blob',
+        params: { file: file.filePath }
+      })
+      .then(response => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', file);
+        link.setAttribute('download', file.fileName);
         document.body.appendChild(link);
         link.click();
+        link.remove();
       })
       .catch(err => {});
   };
@@ -44,11 +48,7 @@ export default function MyFiles(props) {
           />
           <hr />
 
-          <Button
-            color='primary'
-            onClick={() => downloadFile(file.filePath)}
-            block
-          >
+          <Button color='primary' onClick={() => downloadFile(file)} block>
             Download
           </Button>
 

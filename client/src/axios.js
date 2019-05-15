@@ -4,9 +4,9 @@ const instance = axios.create({
   withCredentials: true
 });
 
-let symmetricKey = 'Symetric';
+// let symmetricKey = 'Symetric';
 
-let publicKey = 'Asymetric';
+// let publicKey = 'Asymetric';
 
 // Add a request interceptor
 axios.interceptors.request.use(
