@@ -27,7 +27,7 @@ const decrypt_middleware = (req, res, next) => {
     const decipher = crypto.createDecipher(algorithm, symmetricKey);
     let dec = decipher.update(req.data, 'hex', 'utf8');
     dec += decipher.final('utf8');
-    req.data = crypted;
+    req.data = dec;
   }
 
   next();
