@@ -1,29 +1,35 @@
 import axios from 'axios';
+
 const instance = axios.create({
   baseURL: 'http://localhost:3000/api/',
   withCredentials: true
 });
 
-// let symmetricKey = 'Symetric';
-
 // let publicKey = 'Asymetric';
 
 // Add a request interceptor
-axios.interceptors.request.use(
+
+instance.interceptors.request.use(
   function(config) {
     // Do something before request is sent
 
     /*
      * config.data and config.params
      */
+    console.log('Starting Request', config);
 
-    if (config.params) {
-      //encrypt
-    }
+    // if (config.params) {
+    //   //encrypt
+    //   // config.params = CryptoJS.AES.encrypt(config.params, symmetricKey);
+    // }
 
-    if (config.data) {
-      //encrypt
-    }
+    // if (config.data) {
+    //   //encrypt
+    //   // config.data = CryptoJS.AES.encrypt(
+    //   //   JSON.stringify(config.data),
+    //   //   symmetricKey
+    //   // );
+    // }
 
     return config;
   },
@@ -34,7 +40,7 @@ axios.interceptors.request.use(
 );
 
 // Add a response interceptor
-axios.interceptors.response.use(
+instance.interceptors.response.use(
   function(response) {
     // Do something with response data
     return response;

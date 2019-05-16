@@ -11,9 +11,11 @@ import {
   Row,
   Alert
 } from 'reactstrap';
+import crypto from 'crypto';
 
 import axios from '../axios';
 
+let symmetricKey = 'Symetric';
 export class Login extends Component {
   constructor() {
     super();
@@ -49,19 +51,31 @@ export class Login extends Component {
     event.preventDefault();
 
     if (this.state.password.valid && this.state.email.valid) {
+      // var cipher = crypto.createCipher('aes-256-ctr', symmetricKey);
+      // var email_crypted = cipher.update(this.state.email.value, 'utf8', 'hex');
+      // email_crypted += cipher.final('hex');
+
+      // var pass_cipher = crypto.createCipher('aes-256-ctr', symmetricKey);
+      // var pass_crypted = pass_cipher.update(
+      //   this.state.password.value,
+      //   'utf8',
+      //   'hex'
+      // );
+      // pass_crypted += pass_cipher.final('hex');
+
+      const user = {
+        email: this.state.email.value,
+        password: this.state.password.value
+      };
+
       axios
-        .post('users/login', {
-          user: {
-            email: this.state.email.value,
-            password: this.state.password.value
-          }
-        })
+        .post('users/login', { user })
         .then(data => {
           console.log('success');
           this.props.history.push('/');
         })
         .catch(error => {
-          console.log('Error');
+          console.log(error);
 
           this.setState({ visible: true });
         });

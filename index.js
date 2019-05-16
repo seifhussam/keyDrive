@@ -26,6 +26,7 @@ app.use(bodyParser.text());
 
 app.use(cookieParser());
 app.use(fileUpload());
+
 app.use(bodyParser.json({ limit: '5mb' }));
 app.use(
   session({

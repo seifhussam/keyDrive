@@ -35,6 +35,8 @@ export class Home extends Component {
           .catch(err => {});
       })
       .catch(err => {
+        console.log(err);
+
         this.props.history.push('/login');
       });
   }

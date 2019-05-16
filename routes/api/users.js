@@ -3,6 +3,7 @@ const passport = require('passport');
 const router = require('express').Router();
 const auth = require('../auth');
 const Users = mongoose.model('Users');
+const crypto = require('crypto');
 
 //POST new user route (optional, everyone has access)
 router.post('/', auth.optional, (req, res, next) => {
@@ -65,6 +66,8 @@ router.post('/login', auth.optional, (req, res, next) => {
     body: { user }
   } = req;
 
+  const symmetricKey = 'Symetric';
+
   if (!user) {
     return res.status(422).json({
       errors: {
@@ -80,6 +83,12 @@ router.post('/login', auth.optional, (req, res, next) => {
       }
     });
   }
+  // else {
+  //   var decipher = crypto.createDecipher('aes-256-ctr', symmetricKey);
+  //   var dec = decipher.update(user.email, 'hex', 'utf8');
+  //   dec += decipher.final('utf8');
+  //   user.email = dec;
+  // }
 
   if (!user.password) {
     return res.status(422).json({
@@ -88,6 +97,14 @@ router.post('/login', auth.optional, (req, res, next) => {
       }
     });
   }
+
+  // else {
+  //   var decipher = crypto.createDecipher('aes-256-ctr', symmetricKey);
+  //   var dec = decipher.update(user.password, 'hex', 'utf8');
+  //   dec += decipher.final('utf8');
+  //   user.password = dec;
+  // }
+
   return passport.authenticate(
     'local',
     { session: false },
