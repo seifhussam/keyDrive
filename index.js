@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const http = require('http');
 const fileUpload = require('express-fileupload');
+const crypto = require('crypto');
 
 const secret = require('./config/passportConfig.json').secret;
 let dbconfig = require('./config/db.json').db;
@@ -19,13 +20,26 @@ const PORT = process.env.PORT || 8000;
 
 app.use(cors({ credentials: true }));
 
+const algorithm = 'aes-256-ctr';
+const symmetricKey = 'Symetric';
+const decrypt_middleware = (req, res, next) => {
+  if (req.data) {
+    const decipher = crypto.createDecipher(algorithm, symmetricKey);
+    let dec = decipher.update(req.data, 'hex', 'utf8');
+    dec += decipher.final('utf8');
+    req.data = dec;
+  }
+
+  next();
+};
 app.use(require('morgan')('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(bodyParser.text());
-
+app.use(decrypt_middleware);
 app.use(cookieParser());
 app.use(fileUpload());
+
 app.use(bodyParser.json({ limit: '5mb' }));
 app.use(
   session({
