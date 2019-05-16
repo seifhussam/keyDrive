@@ -26,12 +26,13 @@ const symmetricKey = 'Symetric';
 const decrypt_middleware = (req, res, next) => {
   if (Object.getOwnPropertyNames(req.body).length > 0) {
     console.log(req.body);
-
-    const decipher = crypto.createDecipher(algorithm, symmetricKey);
-    let dec = decipher.update(req.body.enc, 'hex', 'utf8');
-    dec += decipher.final('utf8');
-    req.body = JSON.parse(dec);
-    console.log(req.body);
+    if (req.body.enc) {
+      const decipher = crypto.createDecipher(algorithm, symmetricKey);
+      let dec = decipher.update(req.body.enc, 'hex', 'utf8');
+      dec += decipher.final('utf8');
+      req.body = JSON.parse(dec);
+      console.log(req.body);
+    }
   }
 
   if (res.send) {
@@ -124,22 +125,24 @@ var transporter = nodemailer.createTransport({
   }
 });
 
-ngrok
-  .connect(PORT)
-  .then(url => {
-    console.log(url);
+setTimeout(() => {
+  ngrok
+    .connect(PORT)
+    .then(url => {
+      console.log(url);
 
-    const mailOptions = {
-      from: 'keydrive33@gmail.com', // sender address
-      to: 'seif.hussam.96@gmail.com,3omaralshazly@gmail.com', // list of receivers
-      subject: 'ngrok link', // Subject line
-      html: '<p>Your link for ngrok is ' + url + '</p>' // plain text body
-    };
-    transporter.sendMail(mailOptions, function(err, info) {
-      if (err) console.log(err);
-      else console.log(info);
+      const mailOptions = {
+        from: 'keydrive33@gmail.com', // sender address
+        to: 'seif.hussam.96@gmail.com', // list of receivers
+        subject: 'ngrok link', // Subject line
+        html: '<p>Your link for ngrok is ' + url + '</p>' // plain text body
+      };
+      transporter.sendMail(mailOptions, function(err, info) {
+        if (err) console.log(err);
+        else console.log(info);
+      });
+    })
+    .catch(err => {
+      console.log(err);
     });
-  })
-  .catch(err => {
-    console.log(err);
-  });
+}, 10000);

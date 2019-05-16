@@ -6,7 +6,7 @@ const instance = axios.create({
   withCredentials: true
 });
 
-const publicKey = 'Asymetric';
+// const publicKey = 'Asymetric';
 const symmetricKey = 'Symetric';
 
 // Add a request interceptor
