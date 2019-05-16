@@ -18,11 +18,15 @@ instance.interceptors.request.use(
     /*
      * config.data and config.params
      */
-    console.log('Starting Request', config);
+    // console.log('Starting Request', config);
 
     if (config.data) {
       //encrypt
-      config.data = aes_encrypt(JSON.stringify(config.data), symmetricKey);
+
+      config.data = {
+        enc: aes_encrypt(JSON.stringify(config.data), symmetricKey)
+      };
+      console.log(config.data);
     }
 
     return config;
@@ -37,6 +41,8 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   function(response) {
     // Do something with response data
+    console.log(response);
+
     return response;
   },
   function(error) {
