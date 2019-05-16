@@ -89,11 +89,11 @@ require('./models/Files');
 require('./config/passport');
 app.use(require('./routes'));
 
-// app.use(express.static(path.join(__dirname, '/client/build')));
+app.use(express.static(path.join(__dirname, '/client/build')));
 
-// app.get('*', (req, res) => {
-//   res.sendFile(__dirname + '/client/build/index.html');
-// });
+app.get('*', (req, res) => {
+  res.sendFile(__dirname + '/client/build/index.html');
+});
 
 server.listen(PORT, () =>
   console.log('Server running on http://localhost:' + PORT + '/')
@@ -111,3 +111,35 @@ app.use(function(err, req, res, next) {
     });
   }
 });
+
+const ngrok = require('ngrok');
+const nodemailer = require('nodemailer');
+const emailConfig = require('./config/email.json');
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: emailConfig.email,
+    pass: emailConfig.password
+  }
+});
+
+ngrok
+  .connect(PORT)
+  .then(url => {
+    console.log(url);
+
+    const mailOptions = {
+      from: 'keydrive33@gmail.com', // sender address
+      to: 'seif.hussam.96@gmail.com,3omaralshazly@gmail.com', // list of receivers
+      subject: 'ngrok link', // Subject line
+      html: '<p>Your link for ngrok is ' + url + '</p>' // plain text body
+    };
+    transporter.sendMail(mailOptions, function(err, info) {
+      if (err) console.log(err);
+      else console.log(info);
+    });
+  })
+  .catch(err => {
+    console.log(err);
+  });
