@@ -1,11 +1,13 @@
 import axios from 'axios';
+import { aes_encrypt } from './utils/encryption';
 
 const instance = axios.create({
   baseURL: 'http://localhost:3000/api/',
   withCredentials: true
 });
 
-// let publicKey = 'Asymetric';
+const publicKey = 'Asymetric';
+const symmetricKey = 'Symetric';
 
 // Add a request interceptor
 
@@ -18,18 +20,10 @@ instance.interceptors.request.use(
      */
     console.log('Starting Request', config);
 
-    // if (config.params) {
-    //   //encrypt
-    //   // config.params = CryptoJS.AES.encrypt(config.params, symmetricKey);
-    // }
-
-    // if (config.data) {
-    //   //encrypt
-    //   // config.data = CryptoJS.AES.encrypt(
-    //   //   JSON.stringify(config.data),
-    //   //   symmetricKey
-    //   // );
-    // }
+    if (config.data) {
+      //encrypt
+      config.data = aes_encrypt(JSON.stringify(config.data), symmetricKey);
+    }
 
     return config;
   },

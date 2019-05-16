@@ -11,11 +11,9 @@ import {
   Row,
   Alert
 } from 'reactstrap';
-import crypto from 'crypto';
 
 import axios from '../axios';
 
-let symmetricKey = 'Symetric';
 export class Login extends Component {
   constructor() {
     super();
