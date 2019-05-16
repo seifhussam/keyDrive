@@ -22,14 +22,39 @@ app.use(cors({ credentials: true }));
 
 const algorithm = 'aes-256-ctr';
 const symmetricKey = 'Symetric';
+
 const decrypt_middleware = (req, res, next) => {
-  if (req.data) {
+  if (Object.getOwnPropertyNames(req.body).length > 0) {
+    console.log(req.body);
+
     const decipher = crypto.createDecipher(algorithm, symmetricKey);
-    let dec = decipher.update(req.data, 'hex', 'utf8');
+    let dec = decipher.update(req.body.enc, 'hex', 'utf8');
     dec += decipher.final('utf8');
-    req.data = dec;
+    req.body = JSON.parse(dec);
+    console.log(req.body);
   }
 
+  if (res.send) {
+    var oldWrite = res.write,
+      oldEnd = res.end;
+
+    var chunks = [];
+
+    res.write = function(chunk) {
+      chunks.push(chunk);
+
+      oldWrite.apply(res, arguments);
+    };
+
+    res.end = function(chunk) {
+      if (chunk) chunks.push(chunk);
+
+      var body = Buffer.concat(chunks).toString('utf8');
+      // console.log(req.path, body);
+
+      oldEnd.apply(res, arguments);
+    };
+  }
   next();
 };
 app.use(require('morgan')('dev'));
