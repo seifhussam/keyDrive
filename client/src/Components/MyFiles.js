@@ -16,14 +16,18 @@ export default function MyFiles(props) {
 
   const downloadFile = file => {
     axios
-      .get('/upload/download/', { params: { file: file } })
-      .then(data => {
-        const url = window.URL.createObjectURL(new Blob([data.data]));
+      .get('/upload/download/', {
+        responseType: 'blob',
+        params: { file: file.filePath }
+      })
+      .then(response => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', file);
+        link.setAttribute('download', file.fileName);
         document.body.appendChild(link);
         link.click();
+        link.remove();
       })
       .catch(err => {});
   };
@@ -32,22 +36,28 @@ export default function MyFiles(props) {
   };
   return props.files.map(file => {
     return (
-      <Col key={file} md='3'>
+      <Col key={file.filePath} md='3'>
         <br />
         <Card body>
-          <CardTitle>{file}</CardTitle>
+          <CardTitle>{file.fileName}</CardTitle>
           <FileIcon
             color='whitesmoke'
-            {...defaultStyles[getExtention(file) ? getExtention(file) : 'txt']}
+            {...defaultStyles[
+              getExtention(file.fileName) ? getExtention(file.fileName) : 'txt'
+            ]}
           />
           <hr />
 
           <Button color='primary' onClick={() => downloadFile(file)} block>
-            download
+            Download
           </Button>
 
-          <Button color='danger' onClick={() => deleteFile(file)} block>
-            delete
+          <Button
+            color='danger'
+            onClick={() => deleteFile(file.filePath)}
+            block
+          >
+            Delete
           </Button>
         </Card>
       </Col>
