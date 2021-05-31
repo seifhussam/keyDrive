@@ -6,11 +6,15 @@ Key drive is a web application designed for securing and encrypting file uploads
 Files are encrypted using AES-256 
 Http request body is encrypted using AES-256-CTR
 
+## Project Instructions 
+`npm install `
 
-npm install 
+`cd client && npm install `
 
-cd client && npm install 
+`download config folder` 
 
-download config folder 
+`npm run dev` 
 
-npm run dev 
+## ScreenShots and Videos 
+- https://drive.google.com/file/d/1Mu9WD3_Q2HiDfQlitocm4ElMqEwna7Zx/view
+- https://drive.google.com/file/d/1VuogAms1DmdmYg1vFN6H8WVXQNXQw102/view
